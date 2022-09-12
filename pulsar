@@ -1,0 +1,112 @@
+#! /bin/sh
+# /etc/init.d/pulsar: start the pulsar daemon.
+
+# chkconfig: - 80 20
+# description: pulsar
+
+PULSAR_START_SH="$PULSAR_HOME/bin/pulsar-daemon start standalone"
+PULSAR_STOP_SH="$PULSAR_HOME/bin/pulsar-daemon stop standalone"
+
+PULSAR_CONSOLE_DIR=$PULSAR_LOG_DIR
+PULSAR_CONSOLE_LOG=${PULSAR_CONSOLE_DIR}/pulsar-standalone-$HOSTNAME.log
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
+
+prog=pulsar
+DESC="pulsar daemon"
+
+RETVAL=0
+STARTUP_WAIT=30
+SHUTDOWN_WAIT=30
+
+mkdir -p $(dirname $PULSAR_PIDFILE)
+
+# Source function library.
+. /lib/lsb/init-functions
+
+start() {
+    echo -n $"Starting $prog: "
+
+    # Run daemon
+    cd $PULSAR_HOME
+    $PULSAR_START_SH
+
+    count=0
+    launched=false
+    sleep 1
+  
+    until [ $count -gt $STARTUP_WAIT ]
+    do
+        grep 'messaging service is ready, bootstrap service port =' $PULSAR_CONSOLE_LOG > /dev/null
+        if [ $? -eq 0 ] ; then
+            launched=true
+            break
+        fi
+        sleep 1
+        let count=$count+1;
+        echo -ne "wait ${count}s\r"
+    done
+    if [ $launched = 'true' ] ; then
+        log_success_msg "pulsar start success"
+    else
+        log_failure_msg "pulsar start failed"
+    fi
+    echo
+    return 0
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    $PULSAR_STOP_SH
+    log_success_msg "pulsar stop success"
+    echo
+}
+
+reload() {
+    stop
+    start
+}
+
+restart() {
+    stop
+    start
+}
+
+status() {
+    if ! ps -p $PULSAR_PIDFILE > /dev/null ; then
+      echo "$prog is not running"
+      return 1;
+    fi
+    echo "$prog is running"
+    return 0
+}
+
+case "$1" in
+start)
+    start
+    ;;
+
+stop)
+    stop
+    ;;
+
+reload)
+    reload
+    ;;
+
+restart)
+    restart
+    ;;
+
+status)
+    status
+    ;;
+*)
+
+echo $"Usage: $0 {start|stop|reload|restart|status}"
+exit 1
+esac
+
+exit $?
+
+
