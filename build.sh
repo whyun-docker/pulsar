@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-export PULSAR_VERSION=2.7.0
+export PULSAR_VERSION=2.11.0
 TAG_LATEST=yunnysunny/pulsar:latest
 TAG_CURRENT=yunnysunny/pulsar:${PULSAR_VERSION}
 

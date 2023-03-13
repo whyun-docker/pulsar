@@ -9,8 +9,8 @@
 PULSAR_FILENAME=apache-pulsar-$PULSAR_VERSION
 PULSAR_ARCHIVE_NAME=${PULSAR_FILENAME}-bin.tar.gz
 
-
-PULSAR_DOWNLOAD_ADDRESS=http://10.8.19.100/download/$PULSAR_ARCHIVE_NAME
+#https://repo.huaweicloud.com/apache/pulsar/pulsar-2.11.0/apache-pulsar-2.11.0-bin.tar.gz
+PULSAR_DOWNLOAD_ADDRESS=https://repo.huaweicloud.com/apache/pulsar/pulsar-$PULSAR_VERSION/$PULSAR_ARCHIVE_NAME
 
 INSTALL_DIR=/opt
 PULSAR_FULL_DIR=$INSTALL_DIR/$PULSAR_FILENAME
@@ -27,7 +27,7 @@ fi
 echo "Downloading: $PULSAR_DOWNLOAD_ADDRESS..."
 [ -e "$PULSAR_ARCHIVE_NAME" ] && echo 'pulsar archive already exists.'
 if [ ! -e "$PULSAR_ARCHIVE_NAME" ]; then
-  wget -q $PULSAR_DOWNLOAD_ADDRESS
+  curl -fsSLO --compressed $PULSAR_DOWNLOAD_ADDRESS
   if [ $? -ne 0 ]; then
     echo "Not possible to download pulsar."
     exit 1
