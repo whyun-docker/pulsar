@@ -40,7 +40,7 @@ jobs:
             ${{ format('yunnysunny/pulsar:{0}', env.VERSION) }}
             yunnysunny/pulsar:latest
           build-args: |
-            VERSION=${{ env.VERSION }}
+            PULSAR_VERSION=${{ env.VERSION }}
       
       - name: Update core description
         uses: peter-evans/dockerhub-description@v2
